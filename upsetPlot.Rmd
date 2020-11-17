@@ -17,11 +17,13 @@ html_notebook:
 
 ---
 
+# Executive summary
+
+complex-upset package is really easy to use with some cool, sophisticate features. Works well in complex example provded by authors, and simple simulation of data structure we have available.
+
 # Create code for creating an upset plot 
 
-
 Effectively trying to recreate the approach Kylie Glanville used here ![KylieFig](/Users/kirstin/Downloads/kylie_fig.jpeg)
-
 
 Trying to create this to show number of people excluded from an experiment in orthogonal and overlapping grousp. Want to achieve this:
 
@@ -34,7 +36,7 @@ Bars to the left are total number who have done the thing. Bars to the top are n
 ### Set up
 Block here checks if upsetr and devtools is installed, and installs it if not. Installs complex-upset latest version from github
 
-```{r setup, echo=FALSE results='hide'}
+```{r setup, echo=FALSE, results='hide'}
 if(!require(UpSetR)){
     install.packages("UpSetR")
     library(UpSetR)
@@ -297,7 +299,7 @@ complex_simdat <- data.frame(replicate(10,sample(0:1,1000,rep=TRUE)))
 head(complex_simdat)
 ```
 
-### try run the simplest version with this simulated data
+#### try run the simplest version with this simulated data
 
 ```{r create header list for complex upset test}
 
@@ -314,4 +316,10 @@ upset(
     width_ratio=0.1)
 
 ```
+
+## NOTES
+
+Works really well. Easy to reproduce data set. Matches real life data formats. Havent tried to edit and add, but probably can easily enough.
+
+
 
