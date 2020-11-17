@@ -1,0 +1,325 @@
+---
+title: "Upset plot"
+author: "Kirstin Purves, Tom McGregor"
+date: "`r Sys.Date()`"
+
+output:
+  html_document:
+    df_print: paged
+    toc: no
+    number_sections: false
+    highlight: monochrome
+    theme: journal
+code_folding: show
+
+html_notebook:
+  theme: journal
+
+---
+
+# Executive summary
+
+complex-upset package is really easy to use with some cool, sophisticate features. Works well in complex example provded by authors, and simple simulation of data structure we have available.
+
+# Create code for creating an upset plot 
+
+Effectively trying to recreate the approach Kylie Glanville used here ![KylieFig](/Users/kirstin/Downloads/kylie_fig.jpeg)
+
+Trying to create this to show number of people excluded from an experiment in orthogonal and overlapping grousp. Want to achieve this:
+
+![Ideal output](/Users/kirstin/Downloads/WhatsApp Image 2020-11-17 at 14.44.10.jpeg)
+
+Bars to the left are total number who have done the thing. Bars to the top are number of people who have done a mix of the things.
+
+# Try different packages to create plots
+
+### Set up
+Block here checks if upsetr and devtools is installed, and installs it if not. Installs complex-upset latest version from github
+
+```{r setup, echo=FALSE, results='hide'}
+if(!require(UpSetR)){
+    install.packages("UpSetR")
+    library(UpSetR)
+}
+
+if(!require(devtools)){
+  install.packages("devtools")
+  library(devtools)
+}
+
+
+```
+
+# UPSETR
+
+[UpsetR package. Example here](https://www.r-graph-gallery.com/upset-plot.html). 
+
+#### Creates a names list
+```{r upsetr example datac reation}
+# Dataset
+input <- c(
+  M.acuminata = 759,
+  P.dactylifera = 769,
+  A.thaliana = 1187,
+  O.sativa = 1246,
+  S.bicolor = 827,
+  B.distachyon = 387,
+  "P.dactylifera&M.acuminata" = 467,
+  "O.sativa&M.acuminata" = 29,
+  "A.thaliana&O.sativa" = 6,
+  "S.bicolor&A.thaliana" = 9,
+  "O.sativa&P.dactylifera" = 32,
+  "S.bicolor&P.dactylifera" = 49,
+  "S.bicolor&M.acuminata" = 49,
+  "B.distachyon&O.sativa" = 547,
+  "S.bicolor&O.sativa" = 1151,
+  "B.distachyon&A.thaliana" = 10,
+  "B.distachyon&M.acuminata" = 9,
+  "B.distachyon&S.bicolor" = 402,
+  "M.acuminata&A.thaliana" = 155,
+  "A.thaliana&P.dactylifera" = 105,
+  "B.distachyon&P.dactylifera" = 25,
+  "S.bicolor&O.sativa&P.dactylifera" = 42,
+  "B.distachyon&O.sativa&P.dactylifera" = 12,
+  "S.bicolor&O.sativa&B.distachyon" = 2809,
+  "B.distachyon&O.sativa&A.thaliana" = 18,
+  "S.bicolor&O.sativa&A.thaliana" = 40,
+  "S.bicolor&B.distachyon&A.thaliana" = 14,
+  "O.sativa&B.distachyon&M.acuminata" = 28,
+  "S.bicolor&B.distachyon&M.acuminata" = 13,
+  "O.sativa&M.acuminata&P.dactylifera" = 35,
+  "M.acuminata&S.bicolor&A.thaliana" = 21,
+  "B.distachyon&M.acuminata&A.thaliana" = 7,
+  "O.sativa&M.acuminata&A.thaliana" = 13,
+  "M.acuminata&P.dactylifera&A.thaliana" = 206,
+  "P.dactylifera&A.thaliana&S.bicolor" = 4,
+  "O.sativa&A.thaliana&P.dactylifera" = 6,
+  "S.bicolor&O.sativa&M.acuminata" = 64,
+  "S.bicolor&M.acuminata&P.dactylifera" = 19,
+  "B.distachyon&A.thaliana&P.dactylifera" = 3,
+  "B.distachyon&M.acuminata&P.dactylifera" = 12,
+  "B.distachyon&S.bicolor&P.dactylifera" = 23,
+  "M.acuminata&B.distachyon&S.bicolor&A.thaliana" = 54,
+  "P.dactylifera&S.bicolor&O.sativa&M.acuminata" = 62,
+  "B.distachyon&O.sativa&M.acuminata&P.dactylifera" = 18,
+  "S.bicolor&B.distachyon&O.sativa&A.thaliana" = 206,
+  "B.distachyon&M.acuminata&O.sativa&A.thaliana" = 29,
+  "O.sativa&M.acuminata&A.thaliana&S.bicolor" = 71,
+  "M.acuminata&O.sativa&P.dactylifera&A.thaliana" = 28,
+  "B.distachyon&M.acuminata&O.sativa&A.thaliana" = 7,
+  "B.distachyon&S.bicolor&P.dactylifera&A.thaliana" = 11,
+  "B.distachyon&O.sativa&P.dactylifera&A.thaliana" = 5,
+  "A.thaliana&P.dactylifera&S.bicolor&O.sativa" = 21,
+  "M.acuminata&S.bicolor&P.dactylifera&A.thaliana" = 23,
+  "M.acuminata&B.distachyon&S.bicolor&P.dactylifera" = 24,
+  "M.acuminata&O.sativa&S.bicolor&B.distachyon" = 368,
+  "P.dactylifera&B.distachyon&S.bicolor&O.sativa" = 190,
+  "P.dactylifera&B.distachyon&S.bicolor&O.sativa&A.thaliana" = 258,
+  "P.dactylifera&M.acuminata&S.bicolor&B.distachyon&O.sativa" = 685,
+  "M.acuminata&S.bicolor&B.distachyon&O.sativa&A.thaliana" = 1458,
+  "S.bicolor&M.acuminata&P.dactylifera&O.sativa&A.thaliana" = 149,
+  "B.distachyon&M.acuminata&P.dactylifera&O.sativa&A.thaliana" = 80,
+  "M.acuminata&S.bicolor&B.distachyon&P.dactylifera&A.thaliana" = 113,
+  "M.acuminata&S.bicolor&B.distachyon&P.dactylifera&O.sativa&A.thaliana" = 7674
+)
+
+```
+
+#### plots it
+
+```{r upsetr example plot}
+
+upset(fromExpression(input), 
+      nintersects = 40, 
+      nsets = 6, 
+      order.by = "freq", 
+      decreasing = T, 
+      mb.ratio = c(0.6, 0.4),
+      number.angles = 0, 
+      text.scale = 1.1, 
+      point.size = 2.8, 
+      line.size = 1
+      )
+```
+
+
+#### Notes:
+
+The data format here is not really feasible for large complex work. Would be incredibly difficult to create and format. 
+
+### Add the second package
+
+Note that the upset command from complex-upset overrides the one from upsetr above. 
+
+```{r add complex upset packages}
+if(!require(ComplexUpset)){
+  devtools::install_github("krassowski/complex-upset")
+  library(ComplexUpset)
+}
+
+if(!require(ggplot2)){
+  install.packages("ggplot2")
+  library(ggplot2)
+}
+
+if(!require(ggbeeswarm)){
+  install.packages("ggbeeswarm")
+  library(ggbeeswarm)
+}
+
+if(!require(ggplot2movies)){
+  install.packages('ggplot2movies')
+  library(ggplot2movies)
+}
+```
+
+# complex-upset
+
+[Package Git](https://github.com/krassowski/complex-upset). 
+[data preparation advice](https://rdrr.io/github/krassowski/complex-upset/man/upset_data.html).
+[general readme](https://rdrr.io/github/krassowski/complex-upset/f/README.md)
+
+The data set up for this is really clunky. Will be diffcult to create from a normal, wide data frame.
+
+### Run through Readme example
+
+#### Get data
+```{r complex upset read in test data}
+
+
+# reads in a complex dataset of movies, including binary columns that give the genre
+movies = ggplot2movies::movies
+
+# create a list of the genre columns (i.e binary outcomes we want to plot)
+genres = c('Action', 'Animation', 'Comedy', 'Drama', 'Documentary', 'Romance')
+
+head(movies)
+
+```
+
+### Create the plot
+
+This is the most complex version of the plot, it includes 3 different plots on top of the different sets.
+
+```{r complex upsetexample plot full}
+
+upset(
+    movies,
+    genres,
+    annotations = list(
+        'Length'=list(
+            aes=aes(x=intersection, y=length),
+            geom=geom_boxplot()
+        ),
+        'Rating'=list(
+            aes=aes(x=intersection, y=rating),
+            geom=list(
+                # if you do not want to install ggbeeswarm, you can use geom_jitter
+                ggbeeswarm::geom_quasirandom(aes(color=log10(votes))),
+                geom_violin(width=1.1, alpha=0.5)
+            )
+        )
+    ),
+    queries=list(
+        upset_query(
+            intersect=c('Drama', 'Comedy'),
+            color='red',
+            fill='red',
+            only_components=c('intersections_matrix', 'Intersection size')
+        ),
+        upset_query(
+            set='Drama',
+            fill='blue'
+        ),
+        upset_query(
+            intersect=c('Romance', 'Drama'),
+            fill='yellow',
+            only_components=c('Length')
+        )
+    ),
+    min_size=10,
+    width_ratio=0.1
+)
+
+```
+
+This is simplified to just the upset we are after, but with some fun formatting 
+
+```{r complex upsetexample plot simple}
+
+upset(
+    movies,
+    genres,
+    queries=list(
+        upset_query(
+            intersect=c('Drama', 'Comedy'),
+            color='red',
+            fill='red',
+            only_components=c('intersections_matrix', 'Intersection size')
+        ),
+        upset_query(
+            set='Drama',
+            fill='blue'
+        ),
+        upset_query(
+            intersect=c('Romance', 'Drama'),
+            fill='yellow',
+            only_components=c('Length')
+        )
+    ),
+    min_size=10,
+    width_ratio=0.1
+)
+
+```
+
+This is simplified to just the upset we are after, but with some fun formatting 
+
+```{r complex upsetexample plot simplest}
+
+upset(
+    movies,
+    genres,
+    min_size=10,
+    width_ratio=0.1
+)
+
+```
+
+### Run a test example using Complex upset 
+
+### Simulate data conforming to package requirements
+
+Require binary columns representing group membership
+
+```{r simulate complex upset package data}
+
+complex_simdat <- data.frame(replicate(10,sample(0:1,1000,rep=TRUE)))
+
+head(complex_simdat)
+```
+
+#### try run the simplest version with this simulated data
+
+```{r create header list for complex upset test}
+
+setlist <- c("X2","X4","X7","X8","X9")
+
+```
+
+```{r run complex upset with sim data simple version}
+
+upset(
+  complex_simdat,
+    setlist,
+    min_size=10,
+    width_ratio=0.1)
+
+```
+
+## NOTES
+
+Works really well. Easy to reproduce data set. Matches real life data formats. Havent tried to edit and add, but probably can easily enough.
+
+
+
