@@ -1,0 +1,50 @@
+---
+title: "Miscellaneous useful things"
+output: html_notebook
+---
+
+
+# Useful awk commands and tips 
+#### to calculate SE of a column
+
+
+```{bash awk tip 1}
+awk '{x+=$1;y+=$1^2}END{print (sqrt(y/NR-(x/NR)^2)/sqrt(NR))}' <file>   
+```
+
+   
+Notes about the above: **+=** will add all items in a column to a variable *(i.e. x+=$2 would make x a variable containing every individual item in column 2)*
+
+# Useful R markdown commands
+
+display in line equation:
+$\sum_{i^j=1}^n$
+
+display centred and presentation mode equation:
+$$\sum_{i^j=1}^n$$
+
+# Useful sed commands
+
+#### Remove leading and trailing blank lines
+
+```{bash sed remove blanks: leading}
+
+sed '/./,$!d' file.txt
+
+```
+
+
+```{bash sed remove blanks: trailing}
+
+sed -e :a -e '/^\n*$/{$d;N;};/\n$/ba' \
+file.txt
+
+```
+
+# Useful qsub etc
+
+```{bash hold job}
+
+qsub -hold_jid xxxxx script/to/run.sh 
+
+```
